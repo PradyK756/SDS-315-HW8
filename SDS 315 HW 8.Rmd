@@ -28,12 +28,8 @@ milk <- read.csv("milk.csv")
 
 # Problem 1
 
-```{r, include = FALSE}
-ggplot(creatine, aes(x=age, y=creatclear)) + 
-  geom_point() + 
-  geom_smooth(method='lm', color='black')
-```
 
+## Part A
 
 ```{r, echo = FALSE}
 creatinelm <- lm(creatclear ~ age, data = creatine)
@@ -41,29 +37,29 @@ coef_table <- coef(creatinelm) |>
   round(3) |> 
   as.data.frame()
 
-# Convert to a data frame with named row for kable
+
 coef_table <- data.frame(
   Term = names(coef(creatinelm)),
   Estimate = round(coef(creatinelm), 3),
   row.names = NULL
 )
 
-kable(coef_table, caption = "Coefficients for Linear Model: Creatinine Clearance vs. Age")
+kable(coef_table, caption = "Coefficients for Regression: Creatinine Clearance vs. Age")
 ```
 
-## Part A
 
-By using a simple linear regression model predicting creatine levels based off of age, the y-intercept is 147.8 and the slope is -.62. Using these values, we should expect a level of 113.7 mL/min for a 55 year old: (147.8-55(.62)).
+
+By using a  linear regression model predicting creatine levels based off of age, the y-intercept is 147.8 and the slope is -.62. Plugging in these values for a 55 year old, we should expect a creatine level of $(147.8-55 * (.62)) = 113.7$ $mL/min$.
 
 ## Part B
 
-Creatine clearance decreases as people get older by a rate of .62 mL/min per year. This is determining by observing the slope of the regression graph.
+Creatine clearance decreases as people get older by a rate of .62 $mL/min$ per year. This is determined by observing the slope of the regression graph.
 
 ## Part C
 
-Using the intercept of 147.8 and slope of -.62., we can determine the expected creatine level for each age. A 40 year old has an expected creatine level of (147.8-40(.62)) = 123.0 mL/min, and a 60 year old has an expected creatine level of (147.8-60(.62)) = 110.6 mL/min.
+Using the intercept of 147.8 and slope of -.62., we can determine the expected creatine level for each age. A 40 year old has an expected creatine level of $(147.8-40(.62)) = 123.0$ $mL/min$, and a 60 year old has an expected creatine level of $(147.8-60 * (.62)) = 110.6$ $mL/min$.
 
-A 60 year old with a creatine level of 112 mL/min is right around the expected value, but a 40 year old with a creatine level of 135 mL/min is 12 mL/min higher than expected, indicating that the 40 year has a healthier creatine level for his age.
+Once we have these values, we can subtract the actual values to find which is higher. A 60 year old with a creatine level of 112 $mL/min$ is $112-110.6$ = 1.4 $mL/min$ higher than expected, but a 40 year old with a creatine level of 135 $mL/min$ is $135-123$ = 12 $mL/min$ higher than expected. Since $12 > 1.4$ it is concluded that the 40 year has a higher creatine level for his age and is thus healthier.
 
 # Problem 2
 
@@ -76,7 +72,7 @@ covidI <- covid |>
 
 ```
 
-## Part A
+## Part 1
 
 To find the growth rate and doubling times of each country, I first separated the dataset into each country, then applied an exponential growth model to each country's death counts. After producing the model, each dataset was resampled 10,000 times in a Monte Carlo simulation, with the doubling time and growth rate being recorded for each iteration. This allowed me to form a confidence interval for each value.\
 To find the doubling time, I used the equation\
@@ -100,6 +96,9 @@ bootstrapS <- do(10000) * {
 growth_rate_S <- bootstrapS$days_since_first_death
 doubling_time_S <- log(2) / growth_rate_S
 
+test1 <- 70 / 100* growth_rate_I
+test2 <- 70 / 100 * growth_rate_S
+
 ```
 
 These are the values for Italy:
@@ -108,15 +107,16 @@ Italy's Growth Rate: `r round(mean(growth_rate_I), 3)`\
 Italy's Growth Rate 95% Confidence Interval: `r paste0("[", paste(round(quantile(growth_rate_I, c(0.025, 0.975)), 3), collapse = ", "), "]")`\
 Italy's Doubling time: `r round(mean(doubling_time_I), 1)` days \newline Italy's Doubling time 95% Confidence Interval: `r paste0("[", paste(round(quantile(doubling_time_I, c(0.025, 0.975)), 1), collapse = ", "), "]")`
 
-## Part 3
+## Part 2
 
 Like with Italy, the Spain estimates are created using a Monte Carlo simulation.
 
 Spain's Growth Rate: `r round(mean(growth_rate_S), 3)`\
 Spain's Growth Rate 95% Confidence Interval: `r paste0("[", paste(round(quantile(growth_rate_S, c(0.025, 0.975)), 3), collapse = ", "), "]")`\
-Spain's Doubling time: `r round(mean(doubling_time_S), 1)` days \newline Spain's Doubling time 95% Confidence Interval: `r paste0("[", paste(round(quantile(doubling_time_S, c(0.025, 0.975)), 1), collapse = ", "), "]")`
+Spain's Doubling time: `r round(mean(doubling_time_S), 1)` days \newline Spain's Doubling time 95% Confidence Interval: `r paste0("[", paste(format(quantile(doubling_time_S, c(0.025, 0.975)), nsmall = 1, digits = 1), collapse = ", "), "]")`
 
-# Part C
+
+## Part 3
 
 ```{r, echo = FALSE}
 covid |>
@@ -124,6 +124,9 @@ covid |>
 ```
 
 A graph showing the deaths per country over time.
+
+\newpage
+
 
 # Problem 3
 
@@ -140,13 +143,14 @@ $$
 \log(Q) = \beta \log(P) + \log(K)
 $$
 
-where ${\beta}$ is the slope and $\log(K)$ is the constant intercept. By taking the log of price and sales and fitting a linear regression model, and then running a Monte Carlo simulation 10,000 times, we can obtain an estimate and confidence interval for the price elasticity of milk.
+where ${\beta}$ is the slope and $\log(K)$ is the constant intercept. By taking the log of price and sales and fitting a linear regression model, and then running a Monte Carlo simulation 10,000 times, we can obtain an estimate and confidence interval for the price elasticity of milk, which will be our slope.
 
 ```{r P3 Chug, echo = FALSE}
 milklm <- do(10000) * coef(
   lm(log(sales) ~ log(price), data = mosaic::resample(milk))
 )
 ```
+
 
 ```{r, echo = FALSE}
 slopeCI <- quantile(milklm$log.price., probs = c(0.025, 0.975))
